@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "baseUrl": ".",
+    "paths": {
+      "pi-web-access/index.ts": [
+        "./tests/types/pi-web-access.d.ts"
+      ]
+    }
+  },
+  "include": [
+    "index.ts",
+    "tests/types/*.d.ts"
+  ]
+}
