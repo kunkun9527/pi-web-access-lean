@@ -47,6 +47,20 @@ web_access
 
 批量或高级参数应把 JSON 对象编码为 `input` 字符串。仅在需要完整上游 schema 时使用 `help`。
 
+## 实测初始化上下文占用
+
+仅启用本扩展时，它持续贡献给模型的初始化上下文为：
+
+| 模型可见工具 | Lean | 上游 `pi-web-access@0.22.0` |
+| --- | ---: | ---: |
+| Facade / 搜索 | `web_access`：141 | `web_search`：994 |
+| 来源核验 | 已包含在 facade 中 | `source_check`：413 |
+| 内容抓取 | 已包含在 facade 中 | `fetch_content`：576 |
+| 结果续取 | 已包含在 facade 中 | `get_search_content`：393 |
+| **合计** | **141** | **2,376** |
+
+相比固定版本的上游扩展，减少 **2,235 tokens（94.1%）**。测量使用 Pi 0.84.4 和 `pi-context-view@0.4.3`，在全新隔离会话中只启用目标扩展，并排除 Pi 内置工具、skills、context files、消息及无关扩展。Context View 按 `ceil(字符数 / 4)` 估算，因此这些是可复现的上下文占用估值，不是 GPT tokenizer 的精确计数。未计入不会发送给模型的纯运行时 UI 和 slash commands。
+
 ## 版本
 
 上游运行时固定为 `pi-web-access@0.22.0`。
