@@ -6,6 +6,25 @@ import type {
 } from "@earendil-works/pi-coding-agent";
 import webAccess from "pi-web-access/index.ts";
 import { Type } from "typebox";
+const COLLAPSED_DISPLAY_SERVICE = Symbol.for(
+  "@local/pi-collapsed-tools.display-service.v1",
+);
+
+type CollapsedDisplayTool = { name: string };
+type CollapsedDisplayService = {
+  readonly version: 1;
+  decorate<T extends CollapsedDisplayTool>(tool: T): T;
+};
+
+function decorateWithCollapsedDisplay<T extends CollapsedDisplayTool>(tool: T): T {
+  const services = globalThis as unknown as Record<PropertyKey, unknown>;
+  const candidate = services[COLLAPSED_DISPLAY_SERVICE];
+  if (!candidate || typeof candidate !== "object") return tool;
+  const service = candidate as Partial<CollapsedDisplayService>;
+  return service.version === 1 && typeof service.decorate === "function"
+    ? service.decorate(tool)
+    : tool;
+}
 
 type CapturedTool = ToolDefinition<any, any, any>;
 type UpstreamExtension = (pi: ExtensionAPI) => void;
@@ -126,7 +145,7 @@ export function createWebAccessFacade(
         );
       },
     };
-    pi.registerTool(facadeTool);
+    pi.registerTool(decorateWithCollapsedDisplay(facadeTool));
   };
 }
 
