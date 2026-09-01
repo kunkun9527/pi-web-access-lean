@@ -1,6 +1,6 @@
 {
   "name": "@ssk_dev/pi-web-access-lean",
-  "version": "0.22.0",
+  "version": "0.22.1",
   "type": "module",
   "description": "Lean Pi web access plugin, same functionality — 141 initialization tokens, 94% fewer than the original.",
   "license": "MIT",
