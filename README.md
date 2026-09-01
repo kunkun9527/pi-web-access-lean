@@ -1,6 +1,6 @@
 # @ssk_dev/pi-web-access-lean
 
-> **Lean Pi web access plugin with identical features: 141 initialization tokens, 94% lighter than original.**
+> **Lean Pi web access extension with identical features: 141 initialization tokens, 94% lighter than original.**
 > [See my full setup for Pi](https://github.com/kunkun9527/my-lean-pi-setup)
 
 [简体中文](README.zh-CN.md)

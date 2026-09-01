@@ -1,6 +1,6 @@
 # @ssk_dev/pi-web-access-lean
 
-> **Pi 联网插件精简版，保留全部功能，仅需 141 初始化 Token，相比原版减少 94%。**
+> **Pi 联网扩展精简版，保留全部功能，仅需 141 初始化 Token，相比原版减少 94%。**
 > **完整配置参考：** [查看 Pi Lean Setup](https://github.com/kunkun9527/my-lean-pi-setup)
 
 [English](README.md)
@@ -19,7 +19,7 @@
 pi install npm:@ssk_dev/pi-web-access-lean
 ```
 
-请勿与其它 `pi-web-access` 包装插件同时加载，以防重复注册工具。
+请勿与其它 `pi-web-access` 包装扩展同时加载，以防重复注册工具。
 
 ## 使用方法
 
@@ -47,7 +47,7 @@ web_access
 
 ## 初始化上下文占用对比
 
-单独启用本插件时，注入到模型初始上下文中的 Token 占用实测如下：
+单独启用本扩展时，注入到模型初始上下文中的 Token 占用实测如下：
 
 | 模型可见工具 | Lean 精简版 | 原版 `pi-web-access@0.22.0` |
 | --- | ---: | ---: |
