@@ -1,5 +1,8 @@
 # pi-web-access-lean
 
+> **仅占用约 141 tokens：极度节省 Token 的 Pi web access 插件（模型可见初始化上下文）。**
+> **整套配置：** [查看 Pi Lean Setup](https://github.com/kunkun9527/my-lean-pi-setup)
+
 [English](README.md)
 
 [`pi-web-access`](https://github.com/nicobailon/pi-web-access) 的 token 精简版 Pi facade。它保留完整的上游联网运行时，同时只向模型提供一个紧凑 schema。

@@ -1,5 +1,8 @@
 # pi-web-access-lean
 
+> **Only ~141 model-facing initialization tokens — an extremely token-efficient Pi web access plugin.**
+> **Setup:** [Install the complete Pi Lean Setup](https://github.com/kunkun9527/my-lean-pi-setup)
+
 [简体中文](README.zh-CN.md)
 
 A token-lean Pi facade over [`pi-web-access`](https://github.com/nicobailon/pi-web-access). It keeps the complete upstream web runtime while presenting one compact model-facing schema.
