@@ -1,6 +1,6 @@
-# pi-web-access-lean
+# @ssk_dev/pi-web-access-lean
 
-> **Lean Pi web access 插件，功能相同：约 141 vs 2,376 个初始化 tokens。**
+> **Lean Pi web access 插件，功能相同：141 个初始化 tokens，较原插件减少 94%。**
 > **整套配置：** [查看 Pi Lean Setup](https://github.com/kunkun9527/my-lean-pi-setup)
 
 [English](README.md)
@@ -21,7 +21,7 @@
 ## 安装
 
 ```bash
-pi install git:github.com/kunkun9527/pi-web-access-lean
+pi install npm:@ssk_dev/pi-web-access-lean
 ```
 
 不要同时加载另一个 `pi-web-access` 包装层，否则联网工具可能被重复注册。

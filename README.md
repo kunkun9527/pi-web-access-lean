@@ -1,6 +1,6 @@
-# pi-web-access-lean
+# @ssk_dev/pi-web-access-lean
 
-> **Lean Pi web access plugin, same functionality — only ~141 vs ~2,376 initialization tokens.**
+> **Lean Pi web access plugin, same functionality — 141 initialization tokens, 94% fewer than the original.**
 > [See my full setup for Pi](https://github.com/kunkun9527/my-lean-pi-setup)
 
 [简体中文](README.zh-CN.md)
@@ -21,7 +21,7 @@ Instead of exposing four detailed provider-facing tools on every request, the wr
 ## Install
 
 ```bash
-pi install git:github.com/kunkun9527/pi-web-access-lean
+pi install npm:@ssk_dev/pi-web-access-lean
 ```
 
 Do not load another `pi-web-access` wrapper at the same time, or web tools may be registered twice.
