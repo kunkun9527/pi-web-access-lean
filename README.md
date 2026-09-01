@@ -1,6 +1,6 @@
 # pi-web-access-lean
 
-> **Only ~141 initialization tokens (reduced from ~2,376 tokens).**
+> **Lean Pi web access plugin, same functionality — only ~141 vs ~2,376 initialization tokens.**
 > [See my full setup for Pi](https://github.com/kunkun9527/my-lean-pi-setup)
 
 [简体中文](README.zh-CN.md)

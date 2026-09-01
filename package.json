@@ -2,7 +2,7 @@
   "name": "pi-web-access-lean",
   "version": "0.22.0",
   "type": "module",
-  "description": "Only ~141 initialization tokens (reduced from ~2,376 tokens).",
+  "description": "Lean Pi web access plugin, same functionality — only ~141 vs ~2,376 initialization tokens.",
   "license": "MIT",
   "publishConfig": {
     "access": "public"

@@ -1,6 +1,6 @@
 # pi-web-access-lean
 
-> **仅需约 141 个初始化 tokens（从约 2,376 tokens 降低）。**
+> **Lean Pi web access 插件，功能相同：约 141 vs 2,376 个初始化 tokens。**
 > **整套配置：** [查看 Pi Lean Setup](https://github.com/kunkun9527/my-lean-pi-setup)
 
 [English](README.md)
