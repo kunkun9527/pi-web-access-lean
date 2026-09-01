@@ -1,6 +1,6 @@
 # pi-web-access-lean
 
-> **Only ~141 model-facing initialization tokens — an extremely token-efficient Pi web access plugin.**
+> **Only ~141 initialization tokens (reduced from ~2,376 tokens).**
 > **Setup:** [Install the complete Pi Lean Setup](https://github.com/kunkun9527/my-lean-pi-setup)
 
 [简体中文](README.zh-CN.md)
