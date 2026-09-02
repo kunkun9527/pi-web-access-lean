@@ -1,31 +1,29 @@
-# pi-web-access-lean
+# @ssk_dev/pi-web-access-lean
+
+> **Lean Pi web access extension with full features: 141 initial tokens (94% fewer than original).**
+> [See my full setup for Pi](https://github.com/kunkun9527/my-lean-pi-setup)
 
 [简体中文](README.zh-CN.md)
 
-A token-lean Pi facade over [`pi-web-access`](https://github.com/nicobailon/pi-web-access). It keeps the complete upstream web runtime while presenting one compact model-facing schema.
+A lightweight Pi wrapper for [`pi-web-access`](https://github.com/nicobailon/pi-web-access). It preserves the full upstream web search and browsing engine while compressing four separate tools into a single, compact tool schema.
 
-## What it keeps
+## Core Features
 
-- Web search and result continuation.
-- Source and claim checking.
-- URL fetching and upstream provider behavior.
-- Complete advanced operation schemas, disclosed locally through `help` only when needed.
+* Full upstream capabilities: Web search, result pagination, source verification, and page fetching all work as intended.
+* Unified tool interface: Consolidates `web_search`, `source_check`, `fetch_content`, and `get_search_content` under one `web_access` tool.
+* Minimal prompt overhead: Everyday operations use concise string inputs. Detailed schemas and advanced parameters stay out of the prompt until queried via `help`.
 
-## Why it is lean
-
-Instead of exposing four detailed provider-facing tools on every request, the wrapper routes them through one `web_access` tool. Simple calls use a short string; advanced parameters remain available as JSON without keeping every operation schema in the prompt.
-
-## Install
+## Installation
 
 ```bash
-pi install git:github.com/kunkun9527/pi-web-access-lean
+pi install npm:@ssk_dev/pi-web-access-lean
 ```
 
-Do not load another `pi-web-access` wrapper at the same time, or web tools may be registered twice.
+Do not load this alongside another `pi-web-access` wrapper to avoid duplicate tool registrations.
 
-## Use
+## Usage
 
-The model sees one tool:
+The model interacts with a single tool:
 
 ```text
 web_access
@@ -45,7 +43,23 @@ Simple example:
 { "op": "search", "input": "Pi coding agent extensions" }
 ```
 
-For batch or advanced parameters, pass a JSON object encoded as the `input` string. Use `help` only when the complete upstream schema is required.
+For batch or advanced parameters, pass a JSON object encoded as the `input` string. Use `help` only when you need the complete upstream schema.
+
+## Context Footprint Benchmark
+
+With only this extension enabled, its recurring initialization overhead in the model context is:
+
+| Model-facing tool | Lean | Upstream `pi-web-access@0.22.0` |
+| --- | ---: | ---: |
+| Facade / search | `web_access`: 141 | `web_search`: 994 |
+| Source checking | Included in facade | `source_check`: 413 |
+| Content fetching | Included in facade | `fetch_content`: 576 |
+| Result continuation | Included in facade | `get_search_content`: 393 |
+| **Total** | **141** | **2,376** |
+
+This saves **2,235 tokens (94.1%)** compared to the pinned upstream package.
+
+The benchmark was measured on Pi 0.84.4 with `pi-context-view@0.4.3` in a fresh isolated session, excluding built-in tools, skills, context files, and unrelated extensions. Context View estimates tokens as `ceil(characters / 4)`. Pure runtime UI elements and slash commands are excluded as they are not sent to the model.
 
 ## Measured initialization footprint
 
@@ -63,7 +77,7 @@ That is **2,235 fewer tokens (94.1%)** than the pinned upstream extension. The m
 
 ## Versions
 
-The upstream runtime is pinned to `pi-web-access@0.22.0`.
+Upstream runtime is pinned to `pi-web-access@0.22.0`.
 
 ## Development
 
@@ -72,6 +86,6 @@ npm ci
 npm run check
 ```
 
-## License and upstream
+## License
 
 MIT. This project wraps the MIT-licensed [`pi-web-access`](https://github.com/nicobailon/pi-web-access).
