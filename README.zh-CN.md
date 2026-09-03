@@ -52,13 +52,13 @@ web_access
 
 | 模型可见工具 | Lean 精简版 | 原版 `pi-web-access@0.22.0` |
 | --- | ---: | ---: |
-| Facade / 搜索 | `web_access`: 141 | `web_search`: 994 |
+| Facade / 搜索 | `web_access`: 152 | `web_search`: 994 |
 | 来源核验 | 已收敛至统一工具中 | `source_check`: 413 |
 | 网页抓取 | 已收敛至统一工具中 | `fetch_content`: 576 |
 | 结果续取 | 已收敛至统一工具中 | `get_search_content`: 393 |
-| **合计** | **141** | **2,376** |
+| **合计** | **152** | **2,376** |
 
-相比固定版本的上游扩展，初始开销减少了 **2,235 tokens（94.1%）**。
+相比固定版本的上游扩展，初始开销减少了 **2,224 tokens（93.6%）**。
 
 测试环境为 Pi 0.84.4 与 `pi-context-view@0.4.3` 独立会话，排除了 Pi 内置工具、Skills、上下文文件与无关扩展。Context View 按 `ceil(字符数 / 4)` 估算。未计入不会发送给模型的纯运行时 UI 与 Slash 命令。
 

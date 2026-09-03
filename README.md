@@ -52,13 +52,13 @@ With only this extension enabled, its recurring initialization overhead in the m
 
 | Model-facing tool | Lean | Upstream `pi-web-access@0.22.0` |
 | --- | ---: | ---: |
-| Facade / search | `web_access`: 141 | `web_search`: 994 |
+| Facade / search | `web_access`: 152 | `web_search`: 994 |
 | Source checking | Included in facade | `source_check`: 413 |
 | Content fetching | Included in facade | `fetch_content`: 576 |
 | Result continuation | Included in facade | `get_search_content`: 393 |
-| **Total** | **141** | **2,376** |
+| **Total** | **152** | **2,376** |
 
-This saves **2,235 tokens (94.1%)** compared to the pinned upstream package.
+This saves **2,224 tokens (93.6%)** compared to the pinned upstream package.
 
 The benchmark was measured on Pi 0.84.4 with `pi-context-view@0.4.3` in a fresh isolated session, excluding built-in tools, skills, context files, and unrelated extensions. Context View estimates tokens as `ceil(characters / 4)`. Pure runtime UI elements and slash commands are excluded as they are not sent to the model.
 
