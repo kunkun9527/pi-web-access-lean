@@ -1,6 +1,6 @@
 # @ssk_dev/pi-web-access-lean
 
-> **Pi 联网扩展精简版，保留全部功能，仅需 141 初始化 Token，相比原版减少 94%。**
+> **Pi 联网扩展精简版，保留全部功能，仅需 152 初始化 Token，相比原版减少 94%。**
 > **完整配置参考：** [查看 Pi Lean Setup](https://github.com/kunkun9527/my-lean-pi-setup)
 
 [English](README.md)
