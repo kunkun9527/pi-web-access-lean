@@ -11,6 +11,7 @@ A lightweight Pi wrapper for [`pi-web-access`](https://github.com/nicobailon/pi-
 
 * Full upstream capabilities: Web search, result pagination, source verification, and page fetching all work as intended.
 * Unified tool interface: Consolidates `web_search`, `source_check`, `fetch_content`, and `get_search_content` under one `web_access` tool.
+* Direct local PDF extraction: Supports fetching local PDF documents directly (`op: "fetch"` with paths such as `R:/doc.pdf`, Windows paths, and `file:///...`), which is blocked in upstream by SSRF guards. Extracted Markdown is saved locally with page and character counts.
 * Minimal prompt overhead: Everyday operations use concise string inputs. Detailed schemas and advanced parameters stay out of the prompt until queried via `help`.
 
 ## Installation
@@ -33,7 +34,7 @@ web_access
 | --- | --- | --- |
 | `search` | Search the web | Query string |
 | `check` | Check a claim or source | Claim string |
-| `fetch` | Fetch a URL | URL string |
+| `fetch` | Fetch a URL or local PDF | URL or local PDF path |
 | `get` | Continue a stored result | Response ID |
 | `help` | Show full parameters | Operation name |
 
@@ -60,20 +61,6 @@ With only this extension enabled, its recurring initialization overhead in the m
 This saves **2,235 tokens (94.1%)** compared to the pinned upstream package.
 
 The benchmark was measured on Pi 0.84.4 with `pi-context-view@0.4.3` in a fresh isolated session, excluding built-in tools, skills, context files, and unrelated extensions. Context View estimates tokens as `ceil(characters / 4)`. Pure runtime UI elements and slash commands are excluded as they are not sent to the model.
-
-## Measured initialization footprint
-
-With only this extension enabled, its recurring model-facing initialization contribution is:
-
-| Model-facing tool | Lean | Upstream `pi-web-access@0.22.0` |
-| --- | ---: | ---: |
-| Facade / search | `web_access`: 141 | `web_search`: 994 |
-| Source checking | Included in facade | `source_check`: 413 |
-| Content fetching | Included in facade | `fetch_content`: 576 |
-| Result continuation | Included in facade | `get_search_content`: 393 |
-| **Total** | **141** | **2,376** |
-
-That is **2,235 fewer tokens (94.1%)** than the pinned upstream extension. The measurement used Pi 0.84.4 and `pi-context-view@0.4.3` in a fresh isolated session, excluding Pi built-in tools, skills, context files, messages, and unrelated extensions. Context View estimates text as `ceil(characters / 4)`, so these are reproducible context-footprint estimates rather than exact GPT tokenizer counts. Runtime-only UI and slash commands are not included because they are not sent to the model.
 
 ## Versions
 

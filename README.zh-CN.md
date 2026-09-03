@@ -11,6 +11,7 @@
 
 * 保留全部联网功能：支持网页搜索、结果翻页续取、事实与来源核验、网页全文抓取。
 * 统一工具入口：将 `web_search`、`source_check`、`fetch_content` 和 `get_search_content` 整合为一个 `web_access` 工具。
+* 新增本地 PDF 直接读取：支持直接抓取本地 PDF 文件（`op: "fetch"` 支持 `R:/doc.pdf`、Windows 盘符路径、`file:///` 协议及相对路径），突破了原版上游因 SSRF 防护而无法直接读取本地文件的限制，自动将 PDF 提取并持久化为结构化 Markdown 文档。
 * 按需展开高级选项：日常查询只需传入简短字符串；复杂参数可传 JSON，完整 Schema 仅在调用 `help` 时按需提供，避免常驻占用上下文。
 
 ## 安装
@@ -33,7 +34,7 @@ web_access
 | --- | --- | --- |
 | `search` | 网页搜索 | 查询关键词字符串 |
 | `check` | 事实或来源核验 | 待核验内容字符串 |
-| `fetch` | 抓取网页内容 | 目标 URL 字符串 |
+| `fetch` | 抓取网页或本地 PDF | 目标 URL 或本地 PDF 路径 |
 | `get` | 续取已缓存结果 | 对应的 Response ID |
 | `help` | 查看完整参数说明 | 目标操作名称 |
 
