@@ -11,6 +11,7 @@ A lightweight Pi wrapper for [`pi-web-access`](https://github.com/nicobailon/pi-
 
 * Full upstream capabilities: Web search, result pagination, source verification, and page fetching all work as intended.
 * Unified tool interface: Consolidates `web_search`, `source_check`, `fetch_content`, and `get_search_content` under one `web_access` tool.
+* Direct local PDF extraction: Supports fetching local PDF documents directly (`op: "fetch"` with paths such as `R:/doc.pdf`, Windows paths, and `file:///...`), which is blocked in upstream by SSRF guards. Extracted Markdown is saved locally with page and character counts.
 * Minimal prompt overhead: Everyday operations use concise string inputs. Detailed schemas and advanced parameters stay out of the prompt until queried via `help`.
 
 ## Installation
@@ -33,7 +34,7 @@ web_access
 | --- | --- | --- |
 | `search` | Search the web | Query string |
 | `check` | Check a claim or source | Claim string |
-| `fetch` | Fetch a URL | URL string |
+| `fetch` | Fetch a URL or local PDF | URL or local PDF path |
 | `get` | Continue a stored result | Response ID |
 | `help` | Show full parameters | Operation name |
 

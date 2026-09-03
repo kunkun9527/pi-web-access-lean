@@ -1,10 +1,14 @@
 // pi-web-access-lean: one provider-facing facade over the full pi-web-access runtime.
 // Detailed operation schemas stay local and are disclosed only through `help`.
+import { existsSync, readFileSync, statSync } from "node:fs";
+import { extname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import type {
   ExtensionAPI,
   ToolDefinition,
 } from "@earendil-works/pi-coding-agent";
 import webAccess from "pi-web-access/index.ts";
+import { extractPDFToMarkdown, loadPDFConfig } from "pi-web-access/pdf-extract.ts";
 import { Type } from "typebox";
 
 type CapturedTool = ToolDefinition<any, any, any>;
@@ -26,7 +30,7 @@ const FACADE_PARAMETERS = Type.Object({
     enum: ["search", "check", "fetch", "get", "help"],
   }),
   input: Type.Optional(Type.String({
-    description: "Main query, claim, URL, or responseId; use a JSON object string for advanced parameters",
+    description: "Main query, claim, URL, local PDF path, or responseId; use a JSON object string for advanced parameters",
   })),
 });
 
@@ -70,7 +74,7 @@ function helpResult(
     return {
       content: [{
         type: "text" as const,
-        text: "Operations: search(query), check(claim), fetch(URL), get(responseId). For advanced parameters, call help with input set to one operation name.",
+        text: "Operations: search(query), check(claim), fetch(URL or local PDF), get(responseId). For advanced parameters, call help with input set to one operation name.",
       }],
       details: { operation: "help" },
     };
@@ -90,6 +94,118 @@ function helpResult(
   };
 }
 
+interface LocalPDFInfo {
+  absolutePath: string;
+  sizeBytes: number;
+}
+
+function resolveLocalPDF(input: string): LocalPDFInfo | null {
+  const trimmed = input.trim();
+  const isLocal =
+    trimmed.startsWith("/") ||
+    trimmed.startsWith("./") ||
+    trimmed.startsWith("../") ||
+    trimmed.startsWith(".\\") ||
+    trimmed.startsWith("..\\") ||
+    trimmed.startsWith("file://") ||
+    trimmed.startsWith("file:") ||
+    trimmed.startsWith("\\\\") ||
+    /^[a-zA-Z]:[\\/]/.test(trimmed);
+  if (!isLocal) return null;
+
+  let filePath = trimmed;
+  if (trimmed.startsWith("file:")) {
+    try {
+      filePath = fileURLToPath(trimmed);
+    } catch {
+      return null;
+    }
+  }
+
+  if (extname(filePath).toLowerCase() !== ".pdf") return null;
+
+  const absolutePath = resolve(filePath);
+  if (!existsSync(absolutePath)) {
+    throw new Error(`File not found: ${absolutePath}`);
+  }
+  const stat = statSync(absolutePath);
+  if (!stat.isFile()) {
+    throw new Error(`Path is not a file: ${absolutePath}`);
+  }
+  return { absolutePath, sizeBytes: stat.size };
+}
+
+async function executeLocalPDF(
+  url: string,
+  localPdf: LocalPDFInfo,
+  parsed: Record<string, unknown>,
+  signal?: AbortSignal,
+) {
+  if (parsed.mode === "raw") {
+    return {
+      content: [{ type: "text" as const, text: "Error: Unsupported content type in raw mode: application/pdf" }],
+      details: { error: "Unsupported content type in raw mode: application/pdf" },
+    };
+  }
+
+  const pdfConfig = loadPDFConfig();
+  if (!pdfConfig.enabled) {
+    return {
+      content: [{ type: "text" as const, text: "Error: PDF extraction is disabled by pdf.enabled" }],
+      details: { error: "PDF extraction is disabled by pdf.enabled" },
+    };
+  }
+
+  const maxBytes = pdfConfig.maxSizeMB * 1024 * 1024;
+  if (localPdf.sizeBytes > maxBytes) {
+    const errorMsg = `PDF exceeds configured pdf.maxSizeMB limit (${pdfConfig.maxSizeMB} MB)`;
+    return {
+      content: [{ type: "text" as const, text: `Error: ${errorMsg}` }],
+      details: { error: errorMsg },
+    };
+  }
+
+  if (signal?.aborted) {
+    return {
+      content: [{ type: "text" as const, text: "Error: Request was aborted." }],
+      details: { error: "Request was aborted" },
+    };
+  }
+
+  const fileBuffer = readFileSync(localPdf.absolutePath);
+  const buffer = fileBuffer.buffer.slice(
+    fileBuffer.byteOffset,
+    fileBuffer.byteOffset + fileBuffer.byteLength,
+  );
+
+  try {
+    const result = await extractPDFToMarkdown(buffer, localPdf.absolutePath, { signal });
+    return {
+      content: [{
+        type: "text" as const,
+        text: `PDF extracted and saved to: ${result.outputPath}\n\nPages: ${result.pages}\nCharacters: ${result.chars}`,
+      }],
+      details: {
+        urls: [url],
+        urlCount: 1,
+        successful: 1,
+        totalChars: result.chars,
+        title: result.title,
+        pages: result.pages,
+        outputPath: result.outputPath,
+        mode: (parsed.mode as string) ?? "readable",
+        mimeType: "application/pdf",
+      },
+    };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return {
+      content: [{ type: "text" as const, text: `Error: PDF extraction failed: ${message}` }],
+      details: { error: `PDF extraction failed: ${message}` },
+    };
+  }
+}
+
 export function createWebAccessFacade(
   upstream: UpstreamExtension = webAccess,
 ): (pi: ExtensionAPI) => void {
@@ -99,9 +215,9 @@ export function createWebAccessFacade(
     const facadeTool: ToolDefinition<typeof FACADE_PARAMETERS, unknown, unknown> = {
       name: "web_access",
       label: "Web Access",
-      description: "Search, verify, fetch, or continue web content through one local router. Use help for advanced parameters.",
+      description: "Search, verify, fetch web or local PDF content, or continue results through one router. Use help for advanced parameters.",
       promptGuidelines: [
-        "web_access input is the query, claim, URL, or responseId for search, check, fetch, or get. Pass a JSON object string for batch or advanced parameters; use help only when fields are unclear.",
+        "web_access input is the query, claim, URL, local PDF path, or responseId for search, check, fetch, or get. Pass a JSON object string for batch or advanced parameters; use help only when fields are unclear.",
       ],
       parameters: FACADE_PARAMETERS,
       async execute(callId, params, signal, onUpdate, ctx) {
@@ -113,13 +229,20 @@ export function createWebAccessFacade(
         if (!route) {
           throw new Error(`web_access operation is not implemented: ${params.op}`);
         }
+        const parsed = parseInput(params.input ?? "", route.inputName);
+        if (params.op === "fetch" && typeof parsed.url === "string") {
+          const localPdf = resolveLocalPDF(parsed.url);
+          if (localPdf) {
+            return executeLocalPDF(parsed.url, localPdf, parsed, signal);
+          }
+        }
         const tool = tools.get(route.toolName);
         if (!tool) {
           throw new Error(`web_access could not find upstream tool: ${route.toolName}`);
         }
         return tool.execute(
           callId,
-          parseInput(params.input ?? "", route.inputName),
+          parsed,
           signal,
           onUpdate,
           ctx,

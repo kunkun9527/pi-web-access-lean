@@ -11,6 +11,9 @@
     "paths": {
       "pi-web-access/index.ts": [
         "./tests/types/pi-web-access.d.ts"
+      ],
+      "pi-web-access/pdf-extract.ts": [
+        "./tests/types/pi-web-access-pdf.d.ts"
       ]
     }
   },

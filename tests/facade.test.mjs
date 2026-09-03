@@ -224,6 +224,59 @@ test("invalid advanced JSON fails clearly before upstream execution", async () =
   assert.equal(executions, 0);
 });
 
+test("fetch on nonexistent local PDF fails with clear error", async () => {
+  const pi = createPi();
+  createWebAccessFacade(() => {})(pi);
+
+  await assert.rejects(
+    facadeTool(pi).execute(
+      "call-nonexistent-pdf",
+      { op: "fetch", input: "./nonexistent-test-file-12345.pdf" },
+      undefined,
+      undefined,
+      { cwd: "C:/work" },
+    ),
+    /File not found/,
+  );
+});
+
+test("fetch on local PDF with raw mode returns unsupported content type", async () => {
+  const pi = createPi();
+  createWebAccessFacade(() => {})(pi);
+
+  const result = await facadeTool(pi).execute(
+    "call-raw-pdf",
+    {
+      op: "fetch",
+      input: JSON.stringify({
+        url: "R:/OJPEL-Guidelines.pdf",
+        mode: "raw",
+      }),
+    },
+    undefined,
+    undefined,
+    { cwd: "C:/work" },
+  );
+
+  assert.match(result.content[0].text, /Unsupported content type in raw mode/);
+});
+
+test("fetch on valid local PDF extracts markdown directly", async () => {
+  const pi = createPi();
+  createWebAccessFacade(() => {})(pi);
+
+  const result = await facadeTool(pi).execute(
+    "call-local-pdf",
+    { op: "fetch", input: "R:/OJPEL-Guidelines.pdf" },
+    undefined,
+    undefined,
+    { cwd: "C:/work" },
+  );
+
+  assert.match(result.content[0].text, /PDF extracted and saved to:/);
+  assert.equal(result.details.pages, 5);
+});
+
 test("provider-facing facade metadata stays within the context budget", () => {
   const pi = createPi();
   extension(pi);
