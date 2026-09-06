@@ -1,6 +1,6 @@
 # @ssk_dev/pi-web-access-lean
 
-> **Pi 联网扩展精简版，保留全部功能，仅需 152 初始化 Token，相比原版减少 94%。**
+> **Pi 联网扩展精简版，保留全部功能，仅需 152 初始化 Token，相比当前上游减少 94.7%。**
 > **完整配置参考：** [查看 Pi Lean Setup](https://github.com/kunkun9527/my-lean-pi-setup)
 
 [English](README.md)
@@ -50,21 +50,20 @@ web_access
 
 单独启用本扩展时，注入到模型初始上下文中的 Token 占用实测如下：
 
-| 模型可见工具 | Lean 精简版 | 原版 `pi-web-access@0.22.0` |
+| 模型可见工具 | Lean 精简版 | 原版 `pi-web-access@0.28.0` |
 | --- | ---: | ---: |
-| Facade / 搜索 | `web_access`: 152 | `web_search`: 994 |
-| 来源核验 | 已收敛至统一工具中 | `source_check`: 413 |
-| 网页抓取 | 已收敛至统一工具中 | `fetch_content`: 576 |
-| 结果续取 | 已收敛至统一工具中 | `get_search_content`: 393 |
-| **合计** | **152** | **2,376** |
+| Facade / 搜索 | `web_access`: 152 | `web_search`: 1,220 |
+| 来源核验 | 已收敛至统一工具中 | `source_check`: 518 |
+| 网页抓取 | 已收敛至统一工具中 | `fetch_content`: 704 |
+| 结果续取 | 已收敛至统一工具中 | `get_search_content`: 412 |
+| **合计** | **152** | **2,854** |
 
-相比固定版本的上游扩展，初始开销减少了 **2,224 tokens（93.6%）**。
-
+相比当前上游扩展，初始开销减少了 **2,702 tokens（94.7%）**。
 测试环境为 Pi 0.84.4 与 `pi-context-view@0.4.3` 独立会话，排除了 Pi 内置工具、Skills、上下文文件与无关扩展。Context View 按 `ceil(字符数 / 4)` 估算。未计入不会发送给模型的纯运行时 UI 与 Slash 命令。
 
 ## 版本说明
 
-上游运行时锁定为 `pi-web-access@0.22.0`。
+上游运行时锁定为 `pi-web-access@0.28.0`。
 
 ## 本地开发
 

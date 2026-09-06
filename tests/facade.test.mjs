@@ -1,5 +1,41 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+function makePdf(pageCount = 5) {
+  const pageObjectStart = 3;
+  const contentObjectStart = pageObjectStart + pageCount;
+  const fontObject = contentObjectStart + pageCount;
+  const pageRefs = Array.from({ length: pageCount }, (_, index) => `${pageObjectStart + index} 0 R`).join(" ");
+  const objects = [
+    "<< /Type /Catalog /Pages 2 0 R >>",
+    `<< /Type /Pages /Kids [${pageRefs}] /Count ${pageCount} >>`,
+    ...Array.from({ length: pageCount }, (_, index) => `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 ${fontObject} 0 R >> >> /Contents ${contentObjectStart + index} 0 R >>`),
+    "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+    ...Array.from({ length: pageCount }, (_, index) => {
+      const stream = `BT /F1 24 Tf 72 720 Td (Page ${index + 1}) Tj ET`;
+      return `<< /Length ${Buffer.byteLength(stream, "ascii")} >>\nstream\n${stream}\nendstream`;
+    }),
+  ];
+  const chunks = [Buffer.from("%PDF-1.4\n%\xFF\xFF\xFF\xFF\n", "binary")];
+  const offsets = [0];
+  let offset = chunks[0].length;
+  objects.forEach((object, index) => {
+    offsets[index + 1] = offset;
+    const chunk = Buffer.from(`${index + 1} 0 obj\n${object}\nendobj\n`, "binary");
+    chunks.push(chunk);
+    offset += chunk.length;
+  });
+  const xrefOffset = offset;
+  const xref = `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n${offsets.slice(1).map((value) => `${String(value).padStart(10, "0")} 00000 n \n`).join("")}`;
+  chunks.push(Buffer.from(`${xref}trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF\n`, "binary"));
+  return Buffer.concat(chunks);
+}
+
+const fixturePath = join(mkdtempSync(join(tmpdir(), "pi-web-access-lean-")), "fixture.pdf");
+writeFileSync(fixturePath, makePdf());
+
 import { createJiti } from "jiti";
 
 const jiti = createJiti(import.meta.url, { moduleCache: false });
@@ -249,7 +285,7 @@ test("fetch on local PDF with raw mode returns unsupported content type", async 
     {
       op: "fetch",
       input: JSON.stringify({
-        url: "R:/OJPEL-Guidelines.pdf",
+        url: fixturePath,
         mode: "raw",
       }),
     },
@@ -267,7 +303,7 @@ test("fetch on valid local PDF extracts markdown directly", async () => {
 
   const result = await facadeTool(pi).execute(
     "call-local-pdf",
-    { op: "fetch", input: "R:/OJPEL-Guidelines.pdf" },
+    { op: "fetch", input: fixturePath },
     undefined,
     undefined,
     { cwd: "C:/work" },
