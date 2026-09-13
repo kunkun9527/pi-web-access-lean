@@ -59,7 +59,7 @@ web_access
 | 上游 `pi-web-access@0.29.0` | `web_search` (1,242) + `source_check` (533) + `fetch_content` (712) + `get_search_content` (412) | **2,899** |
 
 节省 **2,747 tokens（94.8%）**。
-测量环境为 Pi 0.85.1 的独立临时进程与空白配置。排除内置工具、Skills、上下文文件、消息、无关扩展、运行时 UI 与 Slash Commands；Token 按 `ceil(字符数 / 4)` 估算。
+测量环境为 Pi 0.85.1 的独立临时进程、空白工作目录与空白配置。排除内置工具、Skills、上下文文件、会话历史、用户消息、无关扩展、运行时 UI 与 Slash Commands；计入扩展的 `before_agent_start` 注入。Token 是按 `ceil(字符数 / 4)` 计算的固定字符代理估算，并非模型 tokenizer 实际计费值。
 <!-- token-benchmark:benchmark:end -->
 
 ## 版本说明
