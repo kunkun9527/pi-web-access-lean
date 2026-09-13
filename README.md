@@ -1,6 +1,6 @@
 # @ssk_dev/pi-web-access-lean
 
-> **Lean Pi web access extension with full features: 152 initial tokens (94.7% fewer than current upstream).**
+> **Lean Pi web access extension with full features: 152 initial tokens (94.8% fewer than current upstream).**
 > [See my full setup for Pi](https://github.com/kunkun9527/my-lean-pi-setup)
 
 [简体中文](README.zh-CN.md)
@@ -50,20 +50,20 @@ For batch or advanced parameters, pass a JSON object encoded as the `input` stri
 
 With only this extension enabled, its recurring initialization overhead in the model context is:
 
-| Model-facing tool | Lean | Upstream `pi-web-access@0.28.0` |
+| Model-facing tool | Lean | Upstream `pi-web-access@0.29.0` |
 | --- | ---: | ---: |
-| Facade / search | `web_access`: 152 | `web_search`: 1,220 |
-| Source checking | Included in facade | `source_check`: 518 |
-| Content fetching | Included in facade | `fetch_content`: 704 |
+| Facade / search | `web_access`: 152 | `web_search`: 1,242 |
+| Source checking | Included in facade | `source_check`: 533 |
+| Content fetching | Included in facade | `fetch_content`: 712 |
 | Result continuation | Included in facade | `get_search_content`: 412 |
-| **Total** | **152** | **2,854** |
+| **Total** | **152** | **2,899** |
 
-This saves **2,702 tokens (94.7%)** compared to the current upstream package.
-The benchmark was measured on Pi 0.84.4 with `pi-context-view@0.4.3` in a fresh isolated session, excluding built-in tools, skills, context files, and unrelated extensions. Context View estimates tokens as `ceil(characters / 4)`. Pure runtime UI elements and slash commands are excluded as they are not sent to the model.
+This saves **2,747 tokens (94.8%)** compared to the current upstream package.
+The benchmark was measured on Pi 0.85.1 with `measure-plugin-tokens-v3.mjs` in a fresh isolated session, excluding built-in tools, skills, context files, and unrelated extensions. Token estimates use `ceil(characters / 4)`. Pure runtime UI elements and slash commands are excluded as they are not sent to the model.
 
 ## Versions
 
-Upstream runtime is pinned to `pi-web-access@0.28.0`.
+Upstream runtime is pinned to `pi-web-access@0.29.0`.
 
 ## Development
 
