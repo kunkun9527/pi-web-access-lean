@@ -1,6 +1,8 @@
 # @ssk_dev/pi-web-access-lean
 
-> **Lean Pi web access extension with full features: 152 initial tokens (94.8% fewer than current upstream).**
+<!-- token-benchmark:summary:start -->
+> **Token benchmark: Lean 152, upstream `pi-web-access@0.29.0` 2,899 — 94.8% fewer.**
+<!-- token-benchmark:summary:end -->
 > [See my full setup for Pi](https://github.com/kunkun9527/my-lean-pi-setup)
 
 [简体中文](README.zh-CN.md)
@@ -48,18 +50,17 @@ For batch or advanced parameters, pass a JSON object encoded as the `input` stri
 
 ## Context Footprint Benchmark
 
-With only this extension enabled, its recurring initialization overhead in the model context is:
+<!-- token-benchmark:benchmark:start -->
+With only this extension enabled, its recurring model-facing initialization contribution is:
 
-| Model-facing tool | Lean | Upstream `pi-web-access@0.29.0` |
-| --- | ---: | ---: |
-| Facade / search | `web_access`: 152 | `web_search`: 1,242 |
-| Source checking | Included in facade | `source_check`: 533 |
-| Content fetching | Included in facade | `fetch_content`: 712 |
-| Result continuation | Included in facade | `get_search_content`: 412 |
-| **Total** | **152** | **2,899** |
+| Variant | Tool and prompt contribution | Total |
+| --- | --- | ---: |
+| Lean `@ssk_dev/pi-web-access-lean@0.29.0` | `web_access` (152) | **152** |
+| Upstream `pi-web-access@0.29.0` | `web_search` (1,242) + `source_check` (533) + `fetch_content` (712) + `get_search_content` (412) | **2,899** |
 
-This saves **2,747 tokens (94.8%)** compared to the current upstream package.
-The benchmark was measured on Pi 0.85.1 with `measure-plugin-tokens-v3.mjs` in a fresh isolated session, excluding built-in tools, skills, context files, and unrelated extensions. Token estimates use `ceil(characters / 4)`. Pure runtime UI elements and slash commands are excluded as they are not sent to the model.
+This saves **2,747 tokens (94.8%)**.
+Measured with Pi 0.85.1 in separate temporary processes with empty configuration. Built-in tools, skills, context files, messages, unrelated extensions, runtime UI, and slash commands are excluded. Tokens use `ceil(characters / 4)`.
+<!-- token-benchmark:benchmark:end -->
 
 ## Versions
 
