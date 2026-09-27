@@ -53,6 +53,11 @@ const FACADE_PARAMETERS = Type.Object({
   })),
 });
 
+// Upstream 0.31+ hides its tools behind `web_enable` and toggles the active tool set,
+// which changes the tool list mid-session and breaks prompt caching. The facade is
+// always active, so drop the loader and never let upstream change active tools.
+const UPSTREAM_LOADER = "web_enable";
+
 function capturePi(
   pi: ExtensionAPI,
   tools: Map<string, CapturedTool>,
@@ -60,8 +65,11 @@ function capturePi(
   return new Proxy(pi, {
     get(target, property, receiver) {
       if (property === "registerTool") {
-        return (tool: CapturedTool) => tools.set(tool.name, tool);
+        return (tool: CapturedTool) => {
+          if (tool.name !== UPSTREAM_LOADER) tools.set(tool.name, tool);
+        };
       }
+      if (property === "setActiveTools") return () => undefined;
       const value = Reflect.get(target, property, receiver);
       return typeof value === "function" ? value.bind(target) : value;
     },

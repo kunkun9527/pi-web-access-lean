@@ -339,3 +339,21 @@ test("provider-facing facade metadata stays within the context budget", () => {
     `web_access metadata grew to ${providerMetadata.length} characters`,
   );
 });
+
+test("drops upstream web_enable and never lets upstream change active tools", async () => {
+  const activeCalls = [];
+  const upstream = (pi) => {
+    pi.registerTool({ name: "web_search", async execute() { return { content: [] }; } });
+    pi.registerTool({ name: "web_enable", async execute() { return { content: [] }; } });
+    pi.on("session_start", () => pi.setActiveTools(["web_enable"]));
+  };
+  const pi = createPi();
+  pi.setActiveTools = (names) => activeCalls.push(names);
+  createWebAccessFacade(upstream)(pi);
+  for (const handler of pi.handlers.get("session_start") ?? []) await handler({}, {});
+
+  assert.deepEqual(pi.tools.map((tool) => tool.name), ["web_access"]);
+  assert.deepEqual(activeCalls, []);
+  const help = await facadeTool(pi).execute("help", { op: "help", input: "" });
+  assert.doesNotMatch(help.content[0].text, /web_enable/);
+});
