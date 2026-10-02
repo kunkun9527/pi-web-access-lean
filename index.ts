@@ -243,7 +243,7 @@ export function createWebAccessFacade(
       label: "Web Access",
       description: "Search, verify, fetch web or local PDF content, or continue results through one router. Use help for advanced parameters.",
       promptGuidelines: [
-        "web_access input is the query, claim, URL, local PDF path, or responseId for search, check, fetch, or get. Pass a JSON object string for batch or advanced parameters; use help only when fields are unclear.",
+        "web_access: input is the query, claim, URL, local PDF path, or responseId for search, check, fetch, or get. Pass a JSON object string for batch or advanced parameters; use help only when fields are unclear.",
       ],
       parameters: FACADE_PARAMETERS,
       async execute(callId, params, signal, onUpdate, ctx) {
