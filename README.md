@@ -55,7 +55,7 @@ With only this extension enabled, its recurring model-facing initialization cont
 
 | Variant | Tool and prompt contribution | Total |
 | --- | --- | ---: |
-| Lean `@ssk_dev/pi-web-access-lean@0.32.0` | `web_access` (153) | **153** |
+| Lean `@ssk_dev/pi-web-access-lean@0.32.1` | `web_access` (153) | **153** |
 | Upstream `pi-web-access@0.32.0` | `web_search` (1,171) + `source_check` (609) + `fetch_content` (731) + `get_search_content` (442) | **2,953** |
 
 This saves **2,800 tokens (94.8%)**.
