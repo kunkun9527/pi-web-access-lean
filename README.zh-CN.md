@@ -55,7 +55,7 @@ web_access
 
 | 版本 | 工具与 Prompt 构成 | 合计 |
 | --- | --- | ---: |
-| Lean `@ssk_dev/pi-web-access-lean@0.35.0` | `web_access` (153) | **153** |
+| Lean `@ssk_dev/pi-web-access-lean@0.35.1` | `web_access` (153) | **153** |
 | 上游 `pi-web-access@0.35.0` | `web_search` (1,188) + `source_check` (618) + `fetch_content` (731) + `get_search_content` (442) | **2,979** |
 
 节省 **2,826 tokens（94.9%）**。

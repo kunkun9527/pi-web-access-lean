@@ -1,6 +1,6 @@
 {
   "name": "@ssk_dev/pi-web-access-lean",
-  "version": "0.35.0",
+  "version": "0.35.1",
   "type": "module",
   "description": "Lean Pi web access extension with full features: 152 initial tokens (94.9% fewer than current upstream).",
   "license": "MIT",
@@ -41,9 +41,9 @@
     "pi-web-access": "0.35.0"
   },
   "peerDependencies": {
-    "@earendil-works/pi-ai": ">=0.84.1 <1.0.0",
-    "@earendil-works/pi-coding-agent": ">=0.84.1 <1.0.0",
-    "@earendil-works/pi-tui": ">=0.84.1 <1.0.0",
+    "@earendil-works/pi-ai": ">=0.84.1",
+    "@earendil-works/pi-coding-agent": ">=0.84.1",
+    "@earendil-works/pi-tui": ">=0.84.1",
     "typebox": "*"
   },
   "devDependencies": {
