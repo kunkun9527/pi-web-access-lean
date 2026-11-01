@@ -1,7 +1,7 @@
 export interface PDFExtractResult {
   title: string;
-  pages: number;
-  chars: number;
+  /** The same Markdown written to outputPath. */
+  content: string;
   outputPath: string;
 }
 

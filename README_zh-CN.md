@@ -66,7 +66,7 @@ web_access
 
 ## 版本说明
 
-上游运行时锁定为 `pi-web-access@0.44.0`。
+上游运行时锁定为 `pi-web-access@0.46.0`。
 
 ## 本地开发
 

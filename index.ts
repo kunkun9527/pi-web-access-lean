@@ -338,18 +338,18 @@ async function executeLocalPDF(
 
   try {
     const result = await extractPDFToMarkdown(buffer, localPdf.absolutePath, { signal });
+    // Same text upstream fetch_content returns for a remote PDF since 0.46.0.
     return {
       content: [{
         type: "text" as const,
-        text: `PDF extracted and saved to: ${result.outputPath}\n\nPages: ${result.pages}\nCharacters: ${result.chars}`,
+        text: `PDF extracted and saved to: ${result.outputPath}\n\n${result.content}`,
       }],
       details: {
         urls: [url],
         urlCount: 1,
         successful: 1,
-        totalChars: result.chars,
+        totalChars: result.content.length,
         title: result.title,
-        pages: result.pages,
         outputPath: result.outputPath,
         mode: (parsed.mode as string) ?? "readable",
         mimeType: "application/pdf",

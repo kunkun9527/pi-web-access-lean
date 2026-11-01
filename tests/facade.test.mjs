@@ -96,15 +96,16 @@ test("registers one web_access facade instead of four provider tools", () => {
   );
 });
 
-test("real upstream help exposes the 0.44 search provider surface", async () => {
+test("real upstream help exposes the 0.46 search parameter surface", async () => {
   const pi = createPi();
   extension(pi);
   const result = await facadeTool(pi).execute("help-search", { op: "help", input: "search" });
   const text = result.content.map((item) => item.text ?? "").join("\n");
-  assert.match(text, /serpapi/i);
-  assert.match(text, /serply/i);
-  assert.match(text, /deepseek/i);
-  assert.match(text, /linkup/i);
+  const schema = JSON.parse(text.slice(text.indexOf("{")));
+  // Since 0.45 provider is one string (comma-separated names) and model picks a per-call model.
+  assert.equal(schema.properties.provider.type, "string");
+  assert.match(schema.properties.provider.description, /comma-separated/);
+  assert.equal(schema.properties.model.type, "string");
 });
 
 test("search shorthand forwards the original execution context", async () => {
@@ -321,7 +322,8 @@ test("fetch on valid local PDF extracts markdown directly", async () => {
   );
 
   assert.match(result.content[0].text, /PDF extracted and saved to:/);
-  assert.equal(result.details.pages, 5);
+  for (let page = 1; page <= 5; page++) assert.match(result.content[0].text, new RegExp(`Page ${page}\\b`));
+  assert.equal(result.details.totalChars > 0, true);
 });
 
 test("provider-facing facade metadata stays within the context budget", () => {
@@ -569,7 +571,7 @@ test("prepared top-level fields reach the upstream tool and local PDFs", async (
   const result = await tool.execute("call-pdf", tool.prepareArguments({ url: fixturePath, mode: "raw" }));
   assert.match(result.content[0].text, /Unsupported content type in raw mode/);
   const pdf = await tool.execute("call-pdf-2", tool.prepareArguments({ input: fixturePath }));
-  assert.match(pdf.content[0].text, /Pages: 5/);
+  assert.match(pdf.content[0].text, /Page 5\b/);
 
   // A top-level field that disagrees with input is rejected, never silently dropped.
   for (const args of [{ op: "search", input: '{"numResults":2}', numResults: 9 }, { op: "search", input: "x", query: "y" }]) {
