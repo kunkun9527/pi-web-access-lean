@@ -2,7 +2,7 @@
   "name": "@ssk_dev/pi-web-access-lean",
   "version": "0.46.0",
   "type": "module",
-  "description": "Lean Pi web access extension with full features: 153 initial tokens (94.6% fewer than current upstream).",
+  "description": "Lean Pi web access extension with full features: 153 initial tokens (86.9% fewer than current upstream).",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
