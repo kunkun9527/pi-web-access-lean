@@ -66,7 +66,7 @@ Mistakes are tolerated: an omitted `op` is inferred from unambiguous fields (`re
 
 ## Versions
 
-Upstream runtime is pinned to `pi-web-access@0.46.0`.
+Upstream runtime is pinned to `pi-web-access@0.47.0`.
 
 ## Development
 
