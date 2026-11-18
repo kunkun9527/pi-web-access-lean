@@ -9,7 +9,7 @@
 </div>
 
 <!-- token-benchmark:summary:start -->
-> **常驻上下文：Lean 153 tokens，上游 `pi-web-access@0.47.0` 1,165 tokens，少 86.9%。**
+<p align="center"><img src="assets/chart.zh-CN.svg" alt="常驻上下文：上游 1,165 tokens，精简版 153，少 86.9%" width="800"></p>
 <!-- token-benchmark:summary:end -->
 
 [`pi-web-access`](https://github.com/nicobailon/pi-web-access) 的精简版。运行时直接用上游 `0.47.0`，我只把它的四个工具合成一个 `web_access`，说明也写得更短。
@@ -63,8 +63,6 @@ pi install npm:@ssk_dev/pi-web-access-lean
 | --- | --- | ---: |
 | Lean `@ssk_dev/pi-web-access-lean@0.47.0` | `web_access` (153) | **153** |
 | 上游 `pi-web-access@0.47.0` | `web_search` (338) + `source_check` (225) + `fetch_content` (372) + `get_search_content` (230) | **1,165** |
-
-少 **1,012 tokens（86.9%）**。
 
 <sub>测量方式：Pi 1.4.0，每个版本在独立的临时进程里测，工作目录和配置都是空的。不计内置工具、Skills、上下文文件、会话历史、用户消息、其他扩展、运行时 UI 和 Slash Commands；计入 `before_agent_start` 注入的内容。Token 按 `ceil(字符数 / 4)` 估算，不是实际计费值。</sub>
 <!-- token-benchmark:benchmark:end -->
