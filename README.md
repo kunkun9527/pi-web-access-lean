@@ -1,72 +1,73 @@
-# @ssk_dev/pi-web-access-lean
+<div align="center">
+
+# pi-web-access-lean
+
+**Search, check and fetch the web from Pi, through one small tool.**
+
+[简体中文](https://github.com/kunkun9527/pi-web-access-lean/blob/main/README_zh-CN.md) · Full setup: [My Lean Pi Setup](https://github.com/kunkun9527/my-lean-pi-setup)
+
+</div>
 
 <!-- token-benchmark:summary:start -->
-> **Token benchmark: Lean 153, upstream `pi-web-access@0.47.0` 1,165 — 86.9% fewer.**
+> **Always-on context: 153 tokens vs. 1,165 for upstream `pi-web-access@0.47.0`, 86.9% less.**
 <!-- token-benchmark:summary:end -->
-> [See my full setup for Pi](https://github.com/kunkun9527/my-lean-pi-setup)
 
-[简体中文](https://github.com/kunkun9527/pi-web-access-lean/blob/main/README_zh-CN.md)
+A lean version of [`pi-web-access`](https://github.com/nicobailon/pi-web-access). It runs the upstream `0.47.0` engine as-is and folds its four tools into one `web_access` tool with a short schema.
 
-A lightweight Pi wrapper for [`pi-web-access`](https://github.com/nicobailon/pi-web-access). It preserves the full upstream web search and browsing engine while compressing four separate tools into a single, compact tool schema.
-
-## Context Footprint Benchmark
-
-<!-- token-benchmark:benchmark:start -->
-With only this extension enabled, its recurring model-facing initialization contribution is:
-
-| Variant | Tool and prompt contribution | Total |
-| --- | --- | ---: |
-| Lean `@ssk_dev/pi-web-access-lean@0.47.0` | `web_access` (153) | **153** |
-| Upstream `pi-web-access@0.47.0` | `web_search` (338) + `source_check` (225) + `fetch_content` (372) + `get_search_content` (230) | **1,165** |
-
-This saves **1,012 tokens (86.9%)**.
-Measured with Pi 1.4.0 in separate temporary processes with empty working directories and configuration. Built-in tools, skills, context files, session history, user messages, unrelated extensions, runtime UI, and slash commands are excluded; `before_agent_start` additions are included. Tokens are a fixed character-proxy estimate using `ceil(characters / 4)`, not provider tokenizer billing.
-<!-- token-benchmark:benchmark:end -->
-
-## Core Features
-
-* Full upstream capabilities: Web search, result pagination, source verification, and page fetching all work as intended.
-* Unified tool interface: Consolidates `web_search`, `source_check`, `fetch_content`, and `get_search_content` under one `web_access` tool.
-* Direct local PDF extraction: Supports fetching local PDF documents directly (`op: "fetch"` with paths such as `R:/doc.pdf`, Windows paths, and `file:///...`), which is blocked in upstream by SSRF guards. Extracted Markdown is saved locally with page and character counts.
-* Minimal prompt overhead: Everyday operations use concise string inputs. Detailed schemas and advanced parameters stay out of the prompt until queried via `help`.
-
-## Installation
+## Install
 
 ```bash
 pi install npm:@ssk_dev/pi-web-access-lean
 ```
 
-Do not load this alongside another `pi-web-access` wrapper to avoid duplicate tool registrations.
+Requires Pi `>=0.84.1` and Node.js `>=22.19.0`. Don't install it alongside upstream or another `pi-web-access` wrapper, or the tools get registered twice.
+
+## Compared with upstream
+
+**Kept**: web search, result pagination, source checking and page fetching, all from upstream's engine.
+
+**Trimmed**:
+
+- `web_search`, `source_check`, `fetch_content` and `get_search_content` become one `web_access` tool.
+- Everyday calls take a plain string `input`; full schemas and advanced parameters stay out of the prompt until the model asks with `help`.
+
+**Added**:
+
+- **Local PDFs**: `op: "fetch"` reads local PDF files (`R:/doc.pdf`, Windows paths, `file:///...` and relative paths), which upstream's SSRF guard blocks. The extracted Markdown is saved locally with page and character counts.
+- **Forgiving arguments**: a missing `op` is inferred from unambiguous fields (`responseId`, `url`/`urls`, `claim`, `query`/`queries`, or a bare URL/PDF path versus plain text). An object `input` is serialized, and upstream fields placed at the top level are merged into `input`; a field that disagrees with `input` is rejected, never silently dropped.
 
 ## Usage
 
-The model interacts with a single tool:
-
-```text
-web_access
-```
+The model sees one tool, `web_access`:
 
 | `op` | Purpose | `input` |
 | --- | --- | --- |
-| `search` | Search the web | Query string |
-| `check` | Check a claim or source | Claim string |
-| `fetch` | Fetch a URL or local PDF | URL or local PDF path |
+| `search` | Search the web | Query |
+| `check` | Check a claim or source | Claim |
+| `fetch` | Fetch a URL or local PDF | URL or PDF path |
 | `get` | Continue a stored result | Response ID |
 | `help` | Show full parameters | Operation name |
-
-Simple example:
 
 ```json
 { "op": "search", "input": "Pi coding agent extensions" }
 ```
 
-For batch or advanced parameters, pass a JSON object encoded as the `input` string. Use `help` only when you need the complete upstream schema.
+For batches or advanced parameters, pass a JSON object encoded as the `input` string.
 
-Mistakes are tolerated: an omitted `op` is inferred from unambiguous fields (`responseId`, `url`/`urls`, `claim`, `query`/`queries`, or a bare URL/PDF path vs. plain text), an object `input` is stringified, and upstream fields placed at the top level are merged into `input` (a field that disagrees with `input` is rejected with an error, never silently dropped).
+## Token comparison
 
-## Versions
+<!-- token-benchmark:benchmark:start -->
+With only this extension enabled, what the model reads on every turn:
 
-Upstream runtime is pinned to `pi-web-access@0.47.0`.
+| Variant | Breakdown | Total |
+| --- | --- | ---: |
+| Lean `@ssk_dev/pi-web-access-lean@0.47.0` | `web_access` (153) | **153** |
+| Upstream `pi-web-access@0.47.0` | `web_search` (338) + `source_check` (225) + `fetch_content` (372) + `get_search_content` (230) | **1,165** |
+
+That is **1,012 tokens (86.9%)** less.
+
+<sub>Method: Pi 1.4.0, each variant measured in its own temporary process with an empty working directory and configuration. Built-in tools, skills, context files, session history, user messages, other extensions, runtime UI and slash commands are not counted; `before_agent_start` additions are. Tokens are estimated as `ceil(characters / 4)`, not billed tokens.</sub>
+<!-- token-benchmark:benchmark:end -->
 
 ## Development
 
@@ -77,4 +78,4 @@ npm run check
 
 ## License
 
-MIT. This project wraps the MIT-licensed [`pi-web-access`](https://github.com/nicobailon/pi-web-access).
+MIT. The runtime comes from [`pi-web-access`](https://github.com/nicobailon/pi-web-access) (MIT).

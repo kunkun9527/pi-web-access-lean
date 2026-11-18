@@ -1,34 +1,18 @@
-# @ssk_dev/pi-web-access-lean
+<div align="center">
+
+# pi-web-access-lean
+
+**在 Pi 里搜索、核验、抓取网页，只用一个小工具。**
+
+[English](README.md) · 完整配置：[My Lean Pi Setup](https://github.com/kunkun9527/my-lean-pi-setup)
+
+</div>
 
 <!-- token-benchmark:summary:start -->
-> **Token 基准：Lean 153，上游 `pi-web-access@0.47.0` 1,165，减少 86.9%。**
+> **常驻上下文：Lean 153 tokens，上游 `pi-web-access@0.47.0` 1,165 tokens，少 86.9%。**
 <!-- token-benchmark:summary:end -->
-> **完整配置参考：** [查看 Pi Lean Setup](https://github.com/kunkun9527/my-lean-pi-setup)
 
-[English](README.md)
-
-基于 [`pi-web-access`](https://github.com/nicobailon/pi-web-access) 的精简封装。在完整保留上游网络检索能力的同时，将原本分散的 4 个工具整合成单一紧凑接口，大幅节省 Prompt 空间。
-
-## 初始化上下文占用对比
-
-<!-- token-benchmark:benchmark:start -->
-单独启用本扩展时，模型可见的常驻初始化上下文如下：
-
-| 版本 | 工具与 Prompt 构成 | 合计 |
-| --- | --- | ---: |
-| Lean `@ssk_dev/pi-web-access-lean@0.47.0` | `web_access` (153) | **153** |
-| 上游 `pi-web-access@0.47.0` | `web_search` (338) + `source_check` (225) + `fetch_content` (372) + `get_search_content` (230) | **1,165** |
-
-节省 **1,012 tokens（86.9%）**。
-测量环境为 Pi 1.4.0 的独立临时进程、空白工作目录与空白配置。排除内置工具、Skills、上下文文件、会话历史、用户消息、无关扩展、运行时 UI 与 Slash Commands；计入扩展的 `before_agent_start` 注入。Token 是按 `ceil(字符数 / 4)` 计算的固定字符代理估算，并非模型 tokenizer 实际计费值。
-<!-- token-benchmark:benchmark:end -->
-
-## 核心特性
-
-* 保留全部联网功能：支持网页搜索、结果翻页续取、事实与来源核验、网页全文抓取。
-* 统一工具入口：将 `web_search`、`source_check`、`fetch_content` 和 `get_search_content` 整合为一个 `web_access` 工具。
-* 新增本地 PDF 直接读取：支持直接抓取本地 PDF 文件（`op: "fetch"` 支持 `R:/doc.pdf`、Windows 盘符路径、`file:///` 协议及相对路径），突破了原版上游因 SSRF 防护而无法直接读取本地文件的限制，自动将 PDF 提取并持久化为结构化 Markdown 文档。
-* 按需展开高级选项：日常查询只需传入简短字符串；复杂参数可传 JSON，完整 Schema 仅在调用 `help` 时按需提供，避免常驻占用上下文。
+[`pi-web-access`](https://github.com/nicobailon/pi-web-access) 的精简版。运行时直接用上游 `0.47.0`，我只把它的四个工具合成一个 `web_access`，说明也写得更短。
 
 ## 安装
 
@@ -36,45 +20,62 @@
 pi install npm:@ssk_dev/pi-web-access-lean
 ```
 
-请勿与其它 `pi-web-access` 包装扩展同时加载，以防重复注册工具。
+需要 Pi `>=0.84.1`、Node.js `>=22.19.0`。不要和上游或其他 `pi-web-access` 包装同时安装，否则工具会注册两次。
 
-## 使用方法
+## 和上游比
 
-模型仅会看到一个工具：
+**保留**：网页搜索、结果翻页、来源核验和网页抓取，全部由上游运行时完成。
 
-```text
-web_access
-```
+**精简**：
 
-| `op` 操作 | 说明 | `input` 输入 |
+- `web_search`、`source_check`、`fetch_content`、`get_search_content` 合成一个 `web_access` 工具。
+- 日常调用只传一个字符串 `input`；完整 schema 和高级参数不常驻，模型用 `help` 查询时才展开。
+
+**新增**：
+
+- **读本地 PDF**：`op: "fetch"` 能直接读本地 PDF（`R:/doc.pdf`、Windows 盘符路径、`file:///...` 和相对路径），上游的 SSRF 防护会拦下这类请求。提取出的 Markdown 保存在本地，并给出页数和字符数。
+- **参数容错**：漏传 `op` 时按无歧义的字段推断（`responseId`、`url`/`urls`、`claim`、`query`/`queries`，只有 `input` 时按 URL/PDF 路径还是普通文本区分）。`input` 传成对象时自动转成 JSON 字符串；放在顶层的上游字段会合并进 `input`，和 `input` 里的值冲突时直接报错，不会悄悄丢掉。
+
+## 用法
+
+模型只看到一个 `web_access` 工具：
+
+| `op` | 用途 | `input` |
 | --- | --- | --- |
-| `search` | 网页搜索 | 查询关键词字符串 |
-| `check` | 事实或来源核验 | 待核验内容字符串 |
-| `fetch` | 抓取网页或本地 PDF | 目标 URL 或本地 PDF 路径 |
-| `get` | 续取已缓存结果 | 对应的 Response ID |
-| `help` | 查看完整参数说明 | 目标操作名称 |
-
-基础调用示例：
+| `search` | 网页搜索 | 关键词 |
+| `check` | 核验说法或来源 | 待核验的说法 |
+| `fetch` | 抓取网页或本地 PDF | URL 或 PDF 路径 |
+| `get` | 续取已保存的结果 | Response ID |
+| `help` | 查看完整参数 | 操作名 |
 
 ```json
 { "op": "search", "input": "Pi coding agent extensions" }
 ```
 
-如需使用高级参数或批量操作，请将 JSON 对象序列化后作为 `input` 字符串传入。仅在需要查看完整上游 Schema 时调用 `help`。
+批量或高级参数：把 JSON 对象序列化成字符串，作为 `input` 传入。
 
-对常见传参错误做了兜底：缺少 `op` 时按无歧义字段推断（`responseId`、`url`/`urls`、`claim`、`query`/`queries`，或仅有 `input` 时按 URL/PDF 路径与普通文本区分）；`input` 传成对象时自动转为 JSON 字符串；放在顶层的上游字段会合并进 `input`（与 `input` 中的值冲突时直接报错，不会静默丢弃）。
+## Token 对比
 
-## 版本说明
+<!-- token-benchmark:benchmark:start -->
+只启用这一个扩展时，模型每轮都会读到的内容：
 
-上游运行时锁定为 `pi-web-access@0.47.0`。
+| 版本 | 构成 | 合计 |
+| --- | --- | ---: |
+| Lean `@ssk_dev/pi-web-access-lean@0.47.0` | `web_access` (153) | **153** |
+| 上游 `pi-web-access@0.47.0` | `web_search` (338) + `source_check` (225) + `fetch_content` (372) + `get_search_content` (230) | **1,165** |
 
-## 本地开发
+少 **1,012 tokens（86.9%）**。
+
+<sub>测量方式：Pi 1.4.0，每个版本在独立的临时进程里测，工作目录和配置都是空的。不计内置工具、Skills、上下文文件、会话历史、用户消息、其他扩展、运行时 UI 和 Slash Commands；计入 `before_agent_start` 注入的内容。Token 按 `ceil(字符数 / 4)` 估算，不是实际计费值。</sub>
+<!-- token-benchmark:benchmark:end -->
+
+## 开发
 
 ```bash
 npm ci
 npm run check
 ```
 
-## 开源协议与致谢
+## 协议与致谢
 
-MIT 协议。本项目封装自采用 MIT 协议的 [`pi-web-access`](https://github.com/nicobailon/pi-web-access)。
+MIT。运行时来自 [`pi-web-access`](https://github.com/nicobailon/pi-web-access)（MIT）。
