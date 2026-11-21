@@ -12,7 +12,7 @@
 <p align="center"><img src="assets/chart.svg" alt="Always-on context: 1,165 tokens upstream, 153 Lean, 86.9% less" width="800"></p>
 <!-- token-benchmark:summary:end -->
 
-A lean version of [`pi-web-access`](https://github.com/nicobailon/pi-web-access). It runs the upstream `0.47.0` engine as-is and folds its four tools into one `web_access` tool with a short schema.
+A lean version of [`pi-web-access`](https://github.com/nicobailon/pi-web-access). It runs the upstream `0.48.0` engine as-is and folds its four tools into one `web_access` tool with a short schema.
 
 ## Install
 
@@ -61,8 +61,8 @@ With only this extension enabled, what the model reads on every turn:
 
 | Variant | Breakdown | Total |
 | --- | --- | ---: |
-| Lean `@ssk_dev/pi-web-access-lean@0.47.0` | `web_access` (153) | **153** |
-| Upstream `pi-web-access@0.47.0` | `web_search` (338) + `source_check` (225) + `fetch_content` (372) + `get_search_content` (230) | **1,165** |
+| Lean `@ssk_dev/pi-web-access-lean@0.48.0` | `web_access` (153) | **153** |
+| Upstream `pi-web-access@0.48.0` | `web_search` (338) + `source_check` (225) + `fetch_content` (372) + `get_search_content` (230) | **1,165** |
 
 <sub>Method: Pi 1.4.0, each variant measured in its own temporary process with an empty working directory and configuration. Built-in tools, skills, context files, session history, user messages, other extensions, runtime UI and slash commands are not counted; `before_agent_start` additions are. Tokens are estimated as `ceil(characters / 4)`, not billed tokens.</sub>
 <!-- token-benchmark:benchmark:end -->
